@@ -1,0 +1,20 @@
+server:
+  port: 9090
+spring:
+  application:
+    name: blog-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        service: ${spring.application.name}
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: service-ucenter
+          uri: lb://service-ucenter
+          predicates:
+            - Path=/ucenter/**
+
