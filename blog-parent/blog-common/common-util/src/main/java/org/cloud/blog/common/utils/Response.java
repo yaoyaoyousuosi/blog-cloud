@@ -2,6 +2,7 @@ package org.cloud.blog.common.utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +16,15 @@ public class Response {
 
     }
 
+    public Response setMsg(String msg){
+        this.msg = msg;
+        return this;
+    }
+
+    public Response setCode(Integer code){
+        this.code = code;
+        return this;
+    }
     public static Response ok(Object data){
         return new Response("请求成功", 200, true, data);
     }

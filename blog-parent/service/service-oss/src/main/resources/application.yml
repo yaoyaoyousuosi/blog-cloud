@@ -1,0 +1,19 @@
+server:
+  port: 9095
+spring:
+  application:
+    name: service-oss
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

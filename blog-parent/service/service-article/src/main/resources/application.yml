@@ -1,0 +1,39 @@
+server:
+  port: 9096
+spring:
+  application:
+    name: service-article
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+
+  datasource:
+    driver-class-name: com.mysql.jdbc.Driver
+    type: com.alibaba.druid.pool.DruidDataSource
+    username: root
+    password: 123456
+    url: jdbc:mysql://localhost:3306/blog?characterEncoding=utf8
+
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**.xml
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
+elasticsearch:
+  host: 127.0.0.1
+  port: 9200

@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.cloud.blog.article.mapper.ArticleMapper">
+
+    <resultMap id="article" type="org.cloud.blog.article.domain.Article">
+        <id column="id" property="id"/>
+        <result column="title" property="title"/>
+        <result column="summary" property="summary"/>
+        <result column="comment_counts" property="commentCounts"/>
+        <result column="view_counts" property="viewCounts"/>
+        <result column="weight" property="weight"/>
+        <result column="create_date" property="createDate"/>
+        <result column="author_id" property="authorId"/>
+        <result column="author" property="author"/>
+        <result column="avatar" property="avatar"/>
+        <association property="category">
+            <id column="categoryId" property="id"/>
+            <result column="category_name" property="categoryName"/>
+            <result column="description" property="description"/>
+        </association>
+        <association property="body">
+            <id column="bodyId" property="id"/>
+            <result column="content" property="content"/>
+            <result column="content_html" property="contentHtml"/>
+            <result column="article_id" property="articleId"/>
+        </association>
+    </resultMap>
+
+    <select id="queryArticles" resultType="org.cloud.blog.article.domain.Article">
+        select
+            article.id,article.title,article.summary,article.comment_counts as commentCounts,
+            article.view_counts as viewCounts,article.weight,
+            FROM_UNIXTIME(article.create_date/1000,'%Y-%m-%d %H:%i:%s') as createDate, `user`.nickname as author
+            from ms_article article, ms_sys_user `user`
+			<where>
+                article.author_id = `user`.id
+                <if test="vo.categoryId != null and vo.categoryId != ''">
+                    and article.category_id = #{vo.categoryId}
+                </if>
+                <if test="ids != null">
+                    and article.id in
+                    <foreach collection="ids" item="id" separator="," open="(" close=")">
+                        #{id}
+                    </foreach>
+                </if>
+                <if test="vo.year != null and vo.year != ''">
+                    and YEAR(FROM_UNIXTIME(article.create_date/1000,'%Y-%m-%d %H:%i:%s')) = #{vo.year}
+                </if>
+                <if test="vo.month != null and vo.month != ''">
+                    and month(FROM_UNIXTIME(article.create_date/1000,'%Y-%m-%d %H:%i:%s')) = #{vo.month}
+                </if>
+            </where>
+            ORDER BY createDate desc
+            LIMIT #{vo.page}, #{vo.pageSize}
+    </select>
+
+    <select id="queryArticlesTags" resultType="org.cloud.blog.article.domain.Tag">
+        select tag.* from ms_tag tag, ms_article_tag article_tag
+        where article_tag.article_id = #{id} and tag.id = article_tag.tag_id
+    </select>
+
+    <select id="articleView" resultMap="article">
+        select
+            article.id,article.title,article.summary,article.comment_counts,
+            article.view_counts,article.weight,
+            FROM_UNIXTIME(article.create_date/1000,'%Y-%m-%d %H:%i:%s') as createDate,
+            `user`.nickname as author, `user`.avatar,
+			body.id as bodyId, body.content, body.content_html, body.article_id,
+			category.id as categoryId, category.category_name, category.description
+        from
+            ms_article article, ms_sys_user `user`, ms_article_body body, ms_category category
+		where
+		    article.author_id = `user`.id
+		    and article.id = #{id}
+		    and body.article_id = article.id
+		    and article.category_id = category.id
+    </select>
+
+    <select id="articleListArchives" resultType="org.cloud.blog.article.vo.ArchivesVo">
+        select
+            year(FROM_UNIXTIME(create_date/1000,'%Y-%m-%d %H:%i:%s')) as `year`,
+            month(FROM_UNIXTIME(create_date/1000,'%Y-%m-%d %H:%i:%s')) as `month`, count(*) as count
+        from ms_article
+        GROUP BY `year`, `month`
+        ORDER BY count desc
+    </select>
+
+    <select id="selectArticleIdByTagId" resultType="java.lang.String">
+        select article_id from ms_article_tag
+        where tag_id = #{tagId}
+    </select>
+</mapper>

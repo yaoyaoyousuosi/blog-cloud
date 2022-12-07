@@ -21,4 +21,8 @@ public interface SysUserService extends IService<SysUser> {
     String userLogin(SysUser user) throws BlogException;
 
     String doRegister(SysUser sysUser) throws BlogException;
+
+    SysUser getCurrentUser(String token);
+
+    void updateUser(SysUser user, String userId);
 }

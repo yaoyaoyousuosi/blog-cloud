@@ -6,10 +6,11 @@ import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.teaopenapi.models.Config;
 import com.aliyun.teautil.models.RuntimeOptions;
 import com.google.gson.Gson;
+import com.rabbitmq.client.Channel;
 import org.cloud.blog.consumer.util.RedisUtil;
+import org.springframework.amqp.core.Message;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.data.redis.core.StringRedisTemplate;
-import org.springframework.messaging.Message;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -20,20 +21,22 @@ import java.util.concurrent.TimeUnit;
 @Service
 public class PhoneService {
 
-    @Resource
-    private StringRedisTemplate stringRedisTemplate;
+    @Resource private StringRedisTemplate stringRedisTemplate;
 
     @RabbitListener(queues = "phone")
-    public void consumerPhoneMsg(Message<Map<String, String>> message) throws Exception {
-        System.out.println("接收消息");
-        Map<String, String> payload = message.getPayload();
+    public void consumerPhoneMsg(Map<String,String> payload, Message message, Channel channel) throws Exception {
+        System.out.println(payload);
         String version = payload.get("version");
         String phone = payload.get("phone");
         Boolean bool = RedisUtil.checkConsumerSecurity(stringRedisTemplate, version);
+        long tag = message.getMessageProperties().getDeliveryTag();
         if(bool){
+            channel.basicNack(tag, false, true);
             return;
         }
-        send(phone, version);
+//        send(phone, version);
+        stringRedisTemplate.delete(version);
+        channel.basicAck(tag, false);
     }
 
     public void send(String phone, String version) throws Exception {
@@ -50,7 +53,7 @@ public class PhoneService {
         SendSmsResponse sendSmsResponse = client.sendSmsWithOptions(sendSmsRequest, runtime);
         Integer code = sendSmsResponse.getStatusCode();
         if(200 == code){
-            stringRedisTemplate.opsForValue().set(version, phone, 60, TimeUnit.SECONDS);
+            stringRedisTemplate.opsForValue().set(version+"#phone", phone, 60, TimeUnit.SECONDS);
         }
     }
 

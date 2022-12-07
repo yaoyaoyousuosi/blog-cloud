@@ -17,4 +17,16 @@ spring:
           uri: lb://service-ucenter
           predicates:
             - Path=/ucenter/**
+        - id: service-oss
+          uri: lb://service-oss
+          predicates:
+            - Path=/oss/**
+        - id: service-article
+          uri: lb://service-article
+          predicates:
+            - Path=/article/**
+        - id: service-comment
+          uri: lb://service-comment
+          predicates:
+            - Path=/comment/**
 

@@ -1,0 +1,28 @@
+server:
+  port: 9097
+spring:
+  application:
+    name: service-comment
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    sentinel:
+      transport:
+        port: 8719
+        dashboard: localhost:8080
+  data:
+    mongodb:
+      port: 27017
+      host: 47.93.99.94
+      database: artice
+
+ribbon:
+  ReadTimeout: 5000
+  ConnectTimeout: 5000
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

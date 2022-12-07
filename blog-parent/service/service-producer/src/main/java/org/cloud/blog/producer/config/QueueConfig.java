@@ -1,4 +1,4 @@
-package org.cloud.blog.consumer.config;
+package org.cloud.blog.producer.config;
 
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
@@ -9,12 +9,12 @@ public class QueueConfig {
 
     @Bean
     public Queue phoneQueue(){
-        return new Queue("phone", true, false, false, null);
+        return new Queue("phone", false, false, false, null);
     }
 
     @Bean
     public DirectExchange phoneExchange(){
-        return ExchangeBuilder.directExchange("phoneExchange").build();
+        return ExchangeBuilder.directExchange("phoneExchange").durable(false).build();
     }
 
     @Bean

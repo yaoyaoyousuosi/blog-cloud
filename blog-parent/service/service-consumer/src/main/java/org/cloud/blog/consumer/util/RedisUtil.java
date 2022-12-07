@@ -6,7 +6,7 @@ import org.springframework.util.StringUtils;
 public class RedisUtil {
 
     public static Boolean checkConsumerSecurity(StringRedisTemplate stringRedisTemplate, String version){
-        String flag = stringRedisTemplate.opsForValue().get(version);
+        String flag = stringRedisTemplate.opsForValue().get(version+"#phone");
         if(!StringUtils.isEmpty(flag)){
             return true;
         }
