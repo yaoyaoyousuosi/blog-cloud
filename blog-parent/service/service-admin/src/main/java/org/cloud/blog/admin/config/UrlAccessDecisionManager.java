@@ -27,6 +27,8 @@ public class UrlAccessDecisionManager implements AccessDecisionManager {
                 }else {
                     return;
                 }
+            }else if("ROLE_Deleted".equals(attribute)){
+                throw new AccessDeniedException("此接口被禁用");
             }
             Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
             for (GrantedAuthority authority : authorities){

@@ -40,13 +40,17 @@ public class UrlFilterInvocationSecurityMetadataSource implements FilterInvocati
         List<Permission> permissions = permissionService.permissionWithRole();
         for (Permission permission : permissions){
             if(antPathMatcher.match(permission.getPath(), uri)){
-                List<Role> roles = permission.getRoles();
-                int size = roles.size();
-                String[] needRoles = new String[size];
-                for (int i = 0; i < size; i++) {
-                    needRoles[i] = roles.get(i).getName();
+                if(permission.getDeleted()){
+                    return SecurityConfig.createList("ROLE_Deleted");
+                }else {
+                    List<Role> roles = permission.getRoles();
+                    int size = roles.size();
+                    String[] needRoles = new String[size];
+                    for (int i = 0; i < size; i++) {
+                        needRoles[i] = roles.get(i).getName();
+                    }
+                    return SecurityConfig.createList(needRoles);
                 }
-                return SecurityConfig.createList(needRoles);
             }
         }
         // 没有匹配上路径登录即可访问

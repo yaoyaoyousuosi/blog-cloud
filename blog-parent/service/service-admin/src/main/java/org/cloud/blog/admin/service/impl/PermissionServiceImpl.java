@@ -38,7 +38,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public Map<String, Object> permissionList(PageUtil pageUtil) {
         LambdaQueryWrapper<Permission> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(Permission::getDeleted, 0);
         if(!StringUtils.isEmpty(pageUtil.getQueryString())){
             queryWrapper.like(Permission::getName, pageUtil.getQueryString());
         }
@@ -53,14 +52,15 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
 
     @Override
     public boolean deleteById(Long id) {
-        Permission permission = new Permission();
-        permission.setDeleted(true);
-        permission.setId(id);
-        int count = baseMapper.updateById(permission);
-        if(count > 0){
+        Permission permission = baseMapper.selectById(id);
+        if(permission.getDeleted()){
+            permission.setDeleted(false);
+            baseMapper.updateById(permission);
             return true;
         }
-        return false;
+        permission.setDeleted(true);
+        baseMapper.updateById(permission);
+        return true;
     }
 
     @Override
@@ -81,7 +81,6 @@ public class PermissionServiceImpl extends ServiceImpl<PermissionMapper, Permiss
     @Override
     public List<Permission> permissionWithRole() {
         LambdaQueryWrapper<Permission> permissionWrapper = new LambdaQueryWrapper<>();
-        permissionWrapper.eq(Permission::getDeleted, false);
         List<Permission> permissions = baseMapper.selectList(permissionWrapper);
         setPermissionHasRole(permissions);
         return permissions;
