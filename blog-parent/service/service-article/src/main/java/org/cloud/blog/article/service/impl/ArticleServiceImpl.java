@@ -16,6 +16,7 @@ import org.cloud.blog.article.vo.ArchivesVo;
 import org.cloud.blog.article.vo.ArticleVo;
 import org.cloud.blog.article.vo.TagVo;
 import org.cloud.blog.common.utils.PageVo;
+import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -24,6 +25,7 @@ import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * <p>
@@ -38,6 +40,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Resource private ArticleBodyService articleBodyService;
     @Resource private TagService tagService;
+    @Resource private StringRedisTemplate stringRedisTemplate;
 
     @Override
     public List<Article> queryArticles(PageVo vo) {
@@ -46,7 +49,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         if(!StringUtils.isEmpty(vo.getTagId())){
             ids = baseMapper.selectArticleIdByTagId(vo.getTagId());
             if(ids.size() == 0){
-                ids = null;
+                return null;
             }
         }
         List<Article> articles = baseMapper.queryArticles(vo, ids);
@@ -65,12 +68,6 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         List<Tag> tags = baseMapper.queryArticlesTags(article.getId());
         article.setTags(tags);
         return article;
-    }
-
-    @Override
-    public Article articleView(String id) {
-        Article article = baseMapper.articleView(id);
-        return setValue(article);
     }
 
     @Override
@@ -113,12 +110,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setId(String.valueOf(IdUtil.getSnowflakeNextId()));
         article.setAuthorId(authId);
         article.setCommentCounts(0);
-        article.setViewCounts(0);
         article.setSummary(vo.getSummary());
         article.setTitle(vo.getTitle());
         article.setWeight(0);
         article.setCategoryId(vo.getCategory().get("id"));
         article.setCreateDate(String.valueOf(System.currentTimeMillis()));
+        article.setViewCounts("0");
         baseMapper.insert(article);
         return article.getId();
     }
@@ -131,5 +128,32 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     private void insertArticleTag(String articleId, List<TagVo> tagIds){
         tagService.insertArticleTag(articleId, tagIds);
+    }
+
+    @Override
+    public Article articleView(String id) {
+        Article article = baseMapper.articleView(id);
+        Boolean hasKey = stringRedisTemplate.hasKey("view-" + id);
+        if(hasKey){
+            Long viewCount = stringRedisTemplate.opsForValue().increment("view-" + id);
+            article.setViewCounts(String.valueOf(viewCount));
+        }else {
+            stringRedisTemplate.opsForValue().set("view-" + id, article.getViewCounts());
+        }
+        return setValue(article);
+    }
+
+    @Override
+    public void updateViews() {
+        Set<String> keys = stringRedisTemplate.keys("view-*");
+        for (String key : keys) {
+            Long viewCounts = Long.valueOf(stringRedisTemplate.opsForValue().get(key));
+            key = key.substring(key.lastIndexOf("-") + 1);
+            Article article = new Article();
+            article.setId(key);
+            article.setViewCounts(String.valueOf(viewCounts));
+            baseMapper.updateById(article);
+            stringRedisTemplate.delete("view-" + key);
+        }
     }
 }

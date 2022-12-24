@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.cloud.blog.admin.mapper.SysUserMapper">
+
+    <select id="list" resultType="org.cloud.blog.admin.domain.SysUser">
+        select
+            id, account, avatar,
+            FROM_UNIXTIME(create_date/1000,'%Y-%m-%d %H:%i:%s') as createDate, deleted,
+            email, FROM_UNIXTIME(last_login/1000,'%Y-%m-%d %H:%i:%s') as lastLogin,
+            phone, nickname
+        from ms_sys_user
+        <where>
+            <if test="queryString != null and queryString != ''">
+                and nickname like concat('%', #{queryString}, '%')
+            </if>
+        </where>
+        ORDER BY createDate desc
+        LIMIT #{currentPage}, #{pageSize}
+    </select>
+</mapper>

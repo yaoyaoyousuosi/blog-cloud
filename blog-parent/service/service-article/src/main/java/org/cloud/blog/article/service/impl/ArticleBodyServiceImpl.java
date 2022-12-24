@@ -27,7 +27,8 @@ public class ArticleBodyServiceImpl extends ServiceImpl<ArticleBodyMapper, Artic
         articleBody.setId(String.valueOf(IdUtil.getSnowflakeNextId()));
         articleBody.setContentHtml(body.get("contentHtml"));
         articleBody.setArticleId(body.get("articleId"));
+        articleBody.setSummary(body.get("summary"));
         baseMapper.insert(articleBody);
-        return articleBody.getArticleId();
+        return articleBody.getId();
     }
 }

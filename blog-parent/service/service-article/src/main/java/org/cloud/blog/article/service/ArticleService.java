@@ -29,4 +29,6 @@ public interface ArticleService extends IService<Article> {
     List<ArchivesVo> articleListArchives();
 
     String articlePublish(ArticleVo vo, String authId);
+
+    void updateViews();
 }

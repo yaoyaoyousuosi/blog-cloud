@@ -17,6 +17,7 @@
         <module>service-oss</module>
         <module>service-article</module>
         <module>service-comment</module>
+        <module>service-admin</module>
     </modules>
     <dependencies>
         <dependency>

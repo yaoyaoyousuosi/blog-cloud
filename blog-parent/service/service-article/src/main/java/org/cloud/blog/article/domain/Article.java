@@ -51,7 +51,7 @@ public class Article implements Serializable {
     /**
      * 浏览数量
      */
-    private Integer viewCounts;
+    private String viewCounts;
 
     /**
      * 是否置顶

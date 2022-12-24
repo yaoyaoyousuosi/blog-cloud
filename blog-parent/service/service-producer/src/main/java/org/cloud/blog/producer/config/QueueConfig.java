@@ -14,7 +14,7 @@ public class QueueConfig {
 
     @Bean
     public DirectExchange phoneExchange(){
-        return ExchangeBuilder.directExchange("phoneExchange").durable(false).build();
+        return ExchangeBuilder.directExchange("phoneExchange").durable(true).build();
     }
 
     @Bean

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.cloud.blog.admin.mapper.ArticleMapper">
+    <delete id="deleteArticleTag">
+        delete from ms_article_tag where article_id = #{id}
+    </delete>
+    <delete id="deleteArticleBody">
+        delete from ms_article_body where article_id = #{id}
+    </delete>
+
+    <select id="list" resultType="org.cloud.blog.admin.vo.ArticleVo">
+        select
+            article.id, article.comment_counts as commentCounts, article.title,
+            FROM_UNIXTIME(article.create_date/1000,'%Y-%m-%d %H:%i:%s') as createDate,
+            article.view_counts as viewCounts, sys.nickname as author, b.content_html as body,
+            c.category_name as category
+        from ms_article article, ms_sys_user sys, ms_article_body b, ms_category c
+        <where>
+            article.author_id = sys.id and article.body_id = b.id and article.category_id = c.id
+            <if test="queryString != null and queryString != ''">
+                and article.title like concat('%', #{queryString}, '%')
+            </if>
+        </where>
+        ORDER BY viewCounts desc
+        LIMIT #{currentPage}, #{pageSize}
+    </select>
+</mapper>

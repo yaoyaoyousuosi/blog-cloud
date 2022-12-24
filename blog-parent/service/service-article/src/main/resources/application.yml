@@ -18,11 +18,12 @@ spring:
     username: root
     password: 123456
     url: jdbc:mysql://localhost:3306/blog?characterEncoding=utf8
+  redis:
+    host: 47.93.99.94
+    port: 6379
 
 mybatis-plus:
   mapper-locations: classpath:/mapper/**.xml
-  configuration:
-    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 ribbon:
   ReadTimeout: 5000

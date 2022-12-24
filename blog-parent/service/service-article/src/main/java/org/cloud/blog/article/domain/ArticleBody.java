@@ -30,4 +30,6 @@ public class ArticleBody implements Serializable {
     private String contentHtml;
 
     private String articleId;
+
+    private String summary;
 }

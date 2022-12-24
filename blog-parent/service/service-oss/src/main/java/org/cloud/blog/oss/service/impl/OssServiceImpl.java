@@ -19,4 +19,9 @@ public class OssServiceImpl implements OssService {
     public String uploadArticle(MultipartFile file) {
         return OSSClientUtil.Upload(file, "article");
     }
+
+    @Override
+    public String uploadBlogSources(MultipartFile file, String type) {
+        return OSSClientUtil.Upload(file, type);
+    }
 }

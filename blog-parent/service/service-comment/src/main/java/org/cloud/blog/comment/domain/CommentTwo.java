@@ -1,5 +1,6 @@
 package org.cloud.blog.comment.domain;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 
 import java.util.Date;
@@ -13,5 +14,6 @@ public class CommentTwo {
     private String toUser;
     private String avatar;
     private String articleId;
+    @JsonFormat(timezone = "GMT+8", pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createDate;
 }

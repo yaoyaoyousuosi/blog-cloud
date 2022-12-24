@@ -35,4 +35,12 @@ public class CommentController {
         return Response.ok(commentList).setMsg(null);
     }
 
+    @DeleteMapping("/{id}")
+    public Response deleteCommentById(@PathVariable(value = "id") String articleId){
+        Boolean bool = commentService.deleteCommentById(articleId);
+        if(bool){
+            return Response.ok(null);
+        }
+        return Response.error();
+    }
 }

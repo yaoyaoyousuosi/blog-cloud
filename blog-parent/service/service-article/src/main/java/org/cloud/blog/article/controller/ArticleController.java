@@ -25,7 +25,6 @@ public class ArticleController {
     @PostMapping("/publish")
     public Response articlePublish(@RequestBody ArticleVo vo, @RequestHeader("authId") String authId){
         String articleId = articleService.articlePublish(vo, authId);
-        System.out.println(articleId);
         return Response.ok(articleId).setMsg("发布成功");
     }
 }

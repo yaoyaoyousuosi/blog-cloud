@@ -19,11 +19,9 @@ public class RetryPublishTask {
     @Scheduled(cron = "* 0/10 * * * ? ")
     public void retryPublish(){
         ConcurrentHashMap<String, String> messageContainer = ProducerCallBack.ROLLBACK_MESSAGE_CONTAINER;
-        System.out.println(messageContainer);
         for (Map.Entry entry : messageContainer.entrySet()){
             String version = entry.getKey().toString();
             String body = entry.getValue().toString();
-            System.out.println("定时任务:"+body);
             Map<String, String> payload = new Gson().fromJson(body, Map.class);
             CorrelationData correlationData = new CorrelationData();
             correlationData.setId(version);

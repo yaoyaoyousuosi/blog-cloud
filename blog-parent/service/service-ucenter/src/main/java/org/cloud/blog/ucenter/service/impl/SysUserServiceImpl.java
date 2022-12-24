@@ -44,6 +44,9 @@ public class SysUserServiceImpl extends ServiceImpl<SysUserMapper, SysUser> impl
         if(null == authUser){
             throw new BlogException("该用户不存在，请先注册");
         }
+        if(authUser.getDeleted()){
+            throw new BlogException("您目前处于禁用状态，请联系管理员");
+        }
         String decodePwd = RsaUtil.rsaDecode(authUser.getPassword());
         if(!decodePwd.equals(password)){
             throw new BlogException("密码输入错误，请重试");

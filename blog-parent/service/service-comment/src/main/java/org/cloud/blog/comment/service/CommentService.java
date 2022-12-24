@@ -13,4 +13,6 @@ public interface CommentService {
     List<Comment> queryCommentsById(String articleId);
 
     CommentTwo createCommentTwo(CommentTwo reply);
+
+    Boolean deleteCommentById(String articleId);
 }

@@ -34,7 +34,7 @@ public class PhoneService {
             channel.basicNack(tag, false, true);
             return;
         }
-//        send(phone, version);
+        send(phone, version);
         stringRedisTemplate.delete(version);
         channel.basicAck(tag, false);
     }
