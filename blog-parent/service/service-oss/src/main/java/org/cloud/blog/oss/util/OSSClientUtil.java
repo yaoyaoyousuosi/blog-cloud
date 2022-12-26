@@ -12,8 +12,8 @@ import java.util.UUID;
 
 public class OSSClientUtil {
     private static OSS createClient() {
-        return new OSSClientBuilder().build("https://oss-cn-hangzhou.aliyuncs.com",
-                "LTAI5tKt7m1tKVWAnAhMvAn2", "A1SkmwCW92rF6x6VTV4C7DX5Hgxvsf");
+        return new OSSClientBuilder().build("",
+                "", "");
     }
 
     public static String Upload(MultipartFile file, String type){
