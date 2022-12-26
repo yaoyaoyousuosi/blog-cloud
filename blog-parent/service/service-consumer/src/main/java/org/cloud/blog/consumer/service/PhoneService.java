@@ -46,7 +46,7 @@ public class PhoneService {
         data.put("code", str);
         SendSmsRequest sendSmsRequest = new SendSmsRequest()
                 .setSignName("xhrblog在线平台")
-                .setTemplateCode("SMS_254110806")
+                .setTemplateCode("")
                 .setPhoneNumbers(phone)
                 .setTemplateParam(new Gson().toJson(data));
         RuntimeOptions runtime = new RuntimeOptions();
@@ -60,9 +60,9 @@ public class PhoneService {
 
     private Client createClient() throws Exception {
         Config config = new Config()
-                .setAccessKeyId("LTAI5tKt7m1tKVWAnAhMvAn2")
-                .setAccessKeySecret("A1SkmwCW92rF6x6VTV4C7DX5Hgxvsf");
-        config.endpoint = "dysmsapi.aliyuncs.com";
+                .setAccessKeyId("")
+                .setAccessKeySecret("");
+        config.endpoint = "";
         return new Client(config);
     }
 }
